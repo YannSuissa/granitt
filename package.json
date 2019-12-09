@@ -1,16 +1,8 @@
 {
-  "name": "granitt",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@openzeppelin/contracts": "^2.3.0",
-    "ganache-cli": "^6.7.0"
+    "@openzeppelin/cli": "^2.6.0",
+    "@openzeppelin/contracts": "^2.4.0",
+    "@openzeppelin/contracts-ethereum-package": "^2.4.0",
+    "@openzeppelin/upgrades": "^2.6.0"
   }
 }

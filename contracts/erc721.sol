@@ -1,7 +1,6 @@
 pragma solidity ^0.5.3;
  
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
-
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC721/ERC721Full.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC721/ERC721Mintable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";

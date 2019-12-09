@@ -34,6 +34,13 @@ window.addEventListener('load', async () => {
     console.log("Sale info : ", sale_info);
 
     //----------------------------------------
+    //  create a sale
+    //----------------------------------------
+    await granitt.update_sale(
+      sale_id, "vente_update", 'https://url.link/salex');
+    console.log("update ok : ", sale_id);
+
+    //----------------------------------------
     //  create a block
     //----------------------------------------
     let block_id = await granitt.create_block(

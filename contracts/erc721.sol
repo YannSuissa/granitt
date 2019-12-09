@@ -117,7 +117,6 @@ contract Granitt is Initializable, ERC721Full, ERC721Mintable,
            sales_block[sale_id].name, 
            sales_block[sale_id].block_numbers, 
            sales_block[sale_id].gb.get_increment(),
-           //granitt_blocks.get_increment(sales_block[sale_id].gb),
            sale_uri_list);
   }
 
@@ -125,12 +124,13 @@ contract Granitt is Initializable, ERC721Full, ERC721Mintable,
                        string memory sale_uri) nonReentrant public 
     returns (uint256) 
   {
-      require(msg.sender == sales_block[sale_id].creator || 
-              msg.sender == contract_owner);
+      //require((msg.sender == sales_block[sale_id].creator || 
+//              msg.sender == contract_owner), "sender address error");
 
     sales_block[sale_id].name = name;
-    uint256 len = sales_block[sale_id].sale_uri.length;
-    sales_block[sale_id].sale_uri[len] = sale_uri;
+    sales_block[sale_id].sale_uri.push(sale_uri);
+    //uint256 len = sales_block[sale_id].sale_uri.length;
+    //sales_block[sale_id].sale_uri[len - 1] = sale_uri;
     _setTokenURI(sale_id, sale_uri);
   }
 

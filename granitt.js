@@ -51,6 +51,21 @@ class granitt_contract
     return ret.events.sale_create_event.returnValues._id_new;
   }
 
+  update_sale = async (sale_id, sale_name, uri) => {
+
+    console.log("update sale start...");
+    let ret = await this.contract.methods.update_sale(
+      sale_id, sale_name, uri).send({               
+        from: this.current_addr, 
+        gas: 2000000, 
+        gasPrice: 1e6
+      });
+    
+    //console.log("create sale done : ", ret.events);
+
+    //return ret.events.sale_create_event.returnValues._id_new;
+  }
+
   get_sale_info = async (sale_id) => {
     let info = await this.contract.methods.get_sale_info(sale_id).call();
     //console.log("sale info", info);     

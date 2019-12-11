@@ -86,8 +86,8 @@ contract Granitt is Initializable, ERC721Full, ERC721Mintable,
 
       sales_block_list.push(id_new);
 
-      //_mint(owner, id_new);
-      //_setTokenURI(id_new, sale_uri);
+      _mint(owner, id_new);
+      _setTokenURI(id_new, sale_uri);
 
       emit sale_create_event(owner, id_new);
   }
@@ -123,13 +123,18 @@ contract Granitt is Initializable, ERC721Full, ERC721Mintable,
                        string memory sale_uri) nonReentrant public 
     returns (uint256) 
   {
-      //require((msg.sender == sales_block[sale_id].creator || 
-//              msg.sender == contract_owner), "sender address error");
+    require((msg.sender == sales_block[sale_id].creator || 
+             msg.sender == contract_owner), "sender address error");
 
     sales_block[sale_id].name = name;
     sales_block[sale_id].sale_uri.push(sale_uri);
-    //uint256 len = sales_block[sale_id].sale_uri.length;
-    //sales_block[sale_id].sale_uri[len - 1] = sale_uri;
+
+    uint256 len = sales_block[sale_id].sale_uri.length;
+    if (len > 0)
+      sales_block[sale_id].sale_uri[len - 1] = sale_uri;
+    else
+      sales_block[sale_id].sale_uri.push(sale_uri);
+
     _setTokenURI(sale_id, sale_uri);
   }
 
@@ -137,13 +142,13 @@ contract Granitt is Initializable, ERC721Full, ERC721Mintable,
   //  Blocks
   //----------------------------------------
 
-  function get_block_counter_and_inc() private 
-    returns (uint256) 
-  {
-      uint256 id = blocks_counter;
-      blocks_counter++;
-      return id;
-  }
+  // function get_block_counter_and_inc() private 
+  //   returns (uint256) 
+  // {
+  //     uint256 id = blocks_counter;
+  //     blocks_counter++;
+  //     return id;
+  // }
 
   function create_block(address owner, uint256 sale_id, 
                         string memory block_uri) nonReentrant public 
@@ -152,28 +157,35 @@ contract Granitt is Initializable, ERC721Full, ERC721Mintable,
     require(msg.sender == sales_block[sale_id].creator || 
             msg.sender == contract_owner);
 
-    uint256 id_new = get_block_counter_and_inc();
-    sales_block[sale_id].gb.create_block(owner, id_new, block_uri);
+    //uint256 id_new = get_block_counter_and_inc();
+    uint256 id_new = sales_block[sale_id].gb.create_block(owner, block_uri);
 
-    _mint(owner, id_new);      
-    _setTokenURI(id_new, block_uri);
+    //_mint(owner, id_new);      
+    //_setTokenURI(id_new, block_uri);
 
     emit block_create_event(owner, sale_id, id_new);
 
     return id_new;
   }
 
-  function get_block_uri(uint256 sale_id, uint256 block_id) public view 
+  function get_block_uri(uint256 sale_id, uint32 block_id) public view 
     returns(string memory block_uri)
   {
     return(sales_block[sale_id].gb.get_block_uri(block_id));
   }
 
-  function get_block_owner(uint256 sale_id, uint256 block_id) public view 
+  function get_block_owner(uint256 sale_id, uint32 block_id) public view 
     returns(address block_owner)
   {
     return(sales_block[sale_id].gb.get_block_owner(block_id));
   }
+
+    function get_sale_increment(uint256 sale_id) public view 
+    returns(uint32 block_increment)
+  {
+    return(sales_block[sale_id].gb.get_increment());
+  }
+
 
 
   //----------------------------------------

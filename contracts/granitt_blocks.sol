@@ -9,14 +9,15 @@ library granitt_blocks {
     address         block_owner;
     string          block_name;       // Name of the block
     //uint256         block_id;         // block unique id (between all sales)
-    uint32          block_id;   // block position in the sale
+    uint256          block_id;   // block position in the sale
     string          block_uri;
   }
 
   struct data_blocks {
-    mapping(uint256 => granitt_block)   blocks; // list of block
+    granitt_block[]   blocks;
+    //mapping(uint256 => granitt_block)   blocks; // list of block
     //uint256[]       blocks_list;      // list for access 
-    uint32          block_increment;  // number of blocks that have been minted
+    //uint32          block_increment;  // number of blocks that have been minted
   }
 
 
@@ -31,24 +32,26 @@ library granitt_blocks {
   // }
 
   function get_increment(data_blocks storage self) internal view
-    returns(uint32 block_increment)
+    returns(uint256 block_increment)
   {
-    return (self.block_increment);
+    return (self.blocks.length);
   }
 
-  function get_block_position_and_inc(data_blocks storage self) internal 
-      returns (uint32) 
-  {
-    uint32 id = self.block_increment;
-    self.block_increment++;
-    return id;
-  }
+  // function get_block_position_and_inc(data_blocks storage self) internal 
+  //     returns (uint32) 
+  // {
+  //   uint32 id = self.block_increment;
+  //   self.block_increment++;
+  //   return id;
+  // }
 
   function create_block(data_blocks storage self, address owner, 
     string memory block_uri) internal 
-    returns (uint32) 
+    returns (uint256) 
   {
-    uint32 id_new = get_block_position_and_inc(self);
+    uint256 id_new = self.blocks.length; // get_block_position_and_inc(self);
+    granitt_block memory bl_new;
+    self.blocks.push(bl_new);
     self.blocks[id_new].block_uri = block_uri;
     self.blocks[id_new].block_owner = owner;
     self.blocks[id_new].block_id = id_new;

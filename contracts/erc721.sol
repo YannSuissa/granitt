@@ -158,6 +158,9 @@ contract Granitt is Initializable, ERC721Full, ERC721Mintable,
             msg.sender == contract_owner);
 
     //uint256 id_new = get_block_counter_and_inc();
+    require (sales_block[sale_id].gb.blocks.length < sales_block[sale_id].block_numbers,
+      "Cant create more blocks");
+
     uint256 id_new = sales_block[sale_id].gb.create_block(owner, block_uri);
 
     //_mint(owner, id_new);      
@@ -181,7 +184,7 @@ contract Granitt is Initializable, ERC721Full, ERC721Mintable,
   }
 
     function get_sale_increment(uint256 sale_id) public view 
-    returns(uint32 block_increment)
+    returns(uint256 block_increment)
   {
     return(sales_block[sale_id].gb.get_increment());
   }

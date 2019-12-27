@@ -1,0 +1,22 @@
+{
+  "manifestVersion": "2.2",
+  "contracts": {
+    "Granitt": "Granitt"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts-ethereum-package": "^2.3.0"
+  },
+  "name": "granitt",
+  "version": "1.0.0",
+  "compiler": {
+    "manager": "openzeppelin",
+    "compilerSettings": {
+      "optimizer": {
+        "enabled": false,
+        "runs": "200"
+      }
+    },
+    "solcVersion": "0.5.12"
+  },
+  "telemetryOptIn": false
+}

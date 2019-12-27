@@ -21,29 +21,11 @@ library granitt_blocks {
   }
 
 
-  // function find_block_position_by_id(data_blocks storage self, uint256 block_id) private view
-  //   returns(uint256 block_postion)
-  // {
-  //   for (uint256 i = 0; i < self.block_increment; i++) 
-  //     if (self.blocks[i].block_id == block_id)
-  //       return (i);
-      
-  //   require (1 == 0, "Can't find block block_id");
-  // }
-
   function get_increment(data_blocks storage self) internal view
     returns(uint256 block_increment)
   {
     return (self.blocks.length);
   }
-
-  // function get_block_position_and_inc(data_blocks storage self) internal 
-  //     returns (uint32) 
-  // {
-  //   uint32 id = self.block_increment;
-  //   self.block_increment++;
-  //   return id;
-  // }
 
   function create_block(data_blocks storage self, address owner, 
     string memory block_uri) internal 

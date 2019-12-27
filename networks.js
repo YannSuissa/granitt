@@ -7,6 +7,6 @@ module.exports = {
       gas: 6700000,
       gasPrice: 5e9,
       networkId: '*',
-    },
+    },    
   },
 };

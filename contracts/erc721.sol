@@ -6,39 +6,42 @@ import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC721/ERC721Mi
 import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol";
 
-import { granitt_blocks } from "granitt_blocks.sol";
+//import { granitt_blocks } from "granitt_blocks.sol";
 import "granitt_utils.sol";
 
 
 //import "@openzeppelin/contracts-ethereum-package/contracts/drafts/Counters.sol";
 
-contract Granitt is Initializable, ERC721Full, ERC721Mintable, 
+contract granitt_sale is Initializable, ERC721Full, ERC721Mintable, 
   Ownable, ReentrancyGuard  
 {
   using granitt_utils for string;
-  using granitt_blocks for granitt_blocks.data_blocks;
+  //using granitt_blocks for granitt_blocks.data_blocks;
+
   //----------------------------------------
   //  Data 
   //----------------------------------------
 
-  struct            granitt_sale {
-    address         creator;
-    string          name;             // Name of the project
-    uint256         sale_id;          // Sale id
-    uint32          block_numbers;    // number of blocks
-    //uint32          block_increment;  // number of blocks that have been minted
-    string[]        sale_uri;         // metadata URL 
-    granitt_blocks.data_blocks        gb;               // list of block
-  }
+  //struct            granitt_sale {
+  address         p_contract_owner;   // contract creator
+  address         p_oracle;           // ex : notary
+  string          p_name;             // Name of the project
+  uint256         p_sale_id;          // Sale id (from granitt database)
+  uint32          p_block_numbers;    // total number of blocks
+  //uint32          block_increment;  // number of blocks that have been minted
+  string          p_sale_uri;         // ERC721 metadata
+  string[]        p_sale_docs;        // GRANITT metadata URLs
+  address[]       p_blocks;           // list of block address
+  //}
 
-  mapping(uint256 => granitt_sale) private sales_block;
-  uint256[] sales_block_list;
+  //mapping(uint256 => granitt_sale) private sales_block;
+  //uint256[] sales_block_list;
   //sale_block[] public sales_block; // First Item has Index 0
 
-  uint256 private sales_counter;
-  uint256 private blocks_counter;
+  //uint256 private sales_counter;
+  //uint256 private blocks_counter;
 
-  address         contract_owner;
+  //address         contract_owner;
 
   //----------------------------------------
   //  init 
@@ -49,95 +52,99 @@ contract Granitt is Initializable, ERC721Full, ERC721Mintable,
     ERC721Enumerable.initialize();
     ERC721Metadata.initialize("GranittNFT", "GRN");
     ERC721Mintable.initialize(msg.sender);
-    contract_owner = msg.sender; // The Sender is the Owner; Ethereum Address of the Owner
+    p_contract_owner = msg.sender; // The Sender is the Owner; Ethereum Address of the Owner
   }
 
   //----------------------------------------
   //  Events
   //----------------------------------------
 
-  event sale_create_event(
-      address _owner,
-      uint256 _id_new
-  );
+  // event init_sale_event(
+  //   uint256 _id_new
+  // );
 
-  event block_create_event(
-      address _owner,
-      uint256 _sale_id,
-      uint256 _id_new
-  );
+  // event block_add_event(
+  //     address _block_address,
+  // );
 
   //----------------------------------------
-  //  Sales
+  //  Sale
   //----------------------------------------
 
-  function create_sale(address owner, string memory name, 
+  function init_sale(address oracle, string memory name, uint256 sale_id,
       string memory sale_uri, uint32 block_numbers) public {
       
-      uint256 id_new = sales_counter;
-      sales_counter++; //increment after for the good total for sales.
+      p_name = name;
+      p_sale_id = sale_id;
+      p_oracle = oracle;
+      p_sale_docs.push(sale_uri);
+      p_block_numbers = block_numbers;
 
-      sales_block[id_new].creator = owner;
-      sales_block[id_new].name = name;
-      sales_block[id_new].sale_id = id_new;
-      sales_block[id_new].block_numbers = block_numbers;
-      //sales_block[id_new].gb.block_increment = 0;
-      sales_block[id_new].sale_uri.push(sale_uri);
+      _mint(p_contract_owner, p_sale_id);
+      _setTokenURI(p_sale_id, sale_uri);
 
-      sales_block_list.push(id_new);
-
-      _mint(owner, id_new);
-      _setTokenURI(id_new, sale_uri);
-
-      emit sale_create_event(owner, id_new);
+      //emit init_sale_event(id_new);
   }
 
 
-  function get_sales_count() public view returns(uint256 count)
-  {
-      return sales_block_list.length;
-  }
+  // function get_sales_count() public view returns(uint256 count)
+  // {
+  //     return sales_block_list.length;
+  // }
 
-  function get_sale_info(uint256 sale_id) public view 
-    returns(address creator, string memory name, uint32 block_numbers, 
-            uint256 block_increment, string memory sale_uri)
+  function get_sale_info() public view 
+    returns(address contract_owner, address oracle, string memory name, 
+            uint32 block_numbers, uint256 block_increment, 
+            string memory sale_uri, string memory sale_docs)
   {
-    string memory sale_uri_list;
+    string memory sale_docs_list;
     string memory sep = ";";
-    uint256 uri_len = sales_block[sale_id].sale_uri.length;
+    uint256 uri_len = p_sale_docs.length;
 
     for (uint256 i = 0; i < uri_len; i++) 
     {
-      sale_uri_list = sale_uri_list.concat_str(sales_block[sale_id].sale_uri[i]);
-      sale_uri_list = sale_uri_list.concat_str(sep);
+      sale_docs_list = sale_docs_list.concat_str(p_sale_docs[i]);
+      sale_docs_list = sale_docs_list.concat_str(sep);
     }
 
-    return(sales_block[sale_id].creator, 
-           sales_block[sale_id].name, 
-           sales_block[sale_id].block_numbers, 
-           sales_block[sale_id].gb.get_increment(),
-           sale_uri_list);
+    return(p_contract_owner, 
+           p_oracle,
+           p_name, 
+           p_block_numbers, 
+           //p_gb.get_increment(),
+           p_blocks.length,
+           p_sale_uri,
+           sale_docs_list);
   }
 
-  function update_sale(uint256 sale_id, string memory name, 
-                       string memory sale_uri) nonReentrant public 
+  function update_sale(string memory name, string memory sale_uri,
+                       string memory sale_doc) nonReentrant public 
     returns (uint256) 
   {
-    require((msg.sender == sales_block[sale_id].creator || 
-             msg.sender == contract_owner), "sender address error");
+    require((msg.sender == p_contract_owner || 
+             msg.sender == p_oracle), "Only oracles can change sale infos");
 
-    sales_block[sale_id].name = name;
-    sales_block[sale_id].sale_uri.push(sale_uri);
+    p_name = name;
+    p_sale_uri = sale_uri;
+    p_sale_docs.push(sale_doc);
 
-    uint256 len = sales_block[sale_id].sale_uri.length;
-    if (len > 0)
-      sales_block[sale_id].sale_uri[len - 1] = sale_uri;
-    else
-      sales_block[sale_id].sale_uri.push(sale_uri);
+    // uint256 len = sales_block[sale_id].sale_uri.length;
+    // if (len > 0)
+    //   sales_block[sale_id].sale_uri[len - 1] = sale_uri;
+    // else
+    //   sales_block[sale_id].sale_uri.push(sale_uri);
 
-    _setTokenURI(sale_id, sale_uri);
+    _setTokenURI(p_sale_id, p_sale_uri);
   }
 
+  function update_oracle(address oracle) nonReentrant public 
+    returns (uint256) 
+  {
+    require(msg.sender == p_contract_owner, "Only contract owner can change the oracle");
+
+    p_oracle = oracle;
+  }
+  
   //----------------------------------------
   //  Blocks
   //----------------------------------------
@@ -150,44 +157,41 @@ contract Granitt is Initializable, ERC721Full, ERC721Mintable,
   //     return id;
   // }
 
-  function create_block(address owner, uint256 sale_id, 
-                        string memory block_uri) nonReentrant public 
-    returns (uint256) 
+  function add_block(address block_address) nonReentrant public     
   {
-    require(msg.sender == sales_block[sale_id].creator || 
-            msg.sender == contract_owner);
+    require((msg.sender == p_contract_owner || 
+             msg.sender == p_oracle), "Only oracles can add blocks");
 
     //uint256 id_new = get_block_counter_and_inc();
-    require (sales_block[sale_id].gb.blocks.length < sales_block[sale_id].block_numbers,
-      "Cant create more blocks");
+    require (p_blocks.length < p_block_numbers,
+             "Cant create more blocks");
 
-    uint256 id_new = sales_block[sale_id].gb.create_block(owner, block_uri);
+    p_blocks.push(block_address);
 
     //_mint(owner, id_new);      
     //_setTokenURI(id_new, block_uri);
 
-    emit block_create_event(owner, sale_id, id_new);
+    //emit block_add_event(block_address);
 
-    return id_new;
   }
 
-  function get_block_uri(uint256 sale_id, uint32 block_id) public view 
-    returns(string memory block_uri)
-  {
-    return(sales_block[sale_id].gb.get_block_uri(block_id));
-  }
+  // function get_block_uri(uint256 sale_id, uint32 block_id) public view 
+  //   returns(string memory block_uri)
+  // {
+  //   return(sales_block[sale_id].gb.get_block_uri(block_id));
+  // }
 
-  function get_block_owner(uint256 sale_id, uint32 block_id) public view 
-    returns(address block_owner)
-  {
-    return(sales_block[sale_id].gb.get_block_owner(block_id));
-  }
+  // function get_block_owner(uint256 sale_id, uint32 block_id) public view 
+  //   returns(address block_owner)
+  // {
+  //   return(sales_block[sale_id].gb.get_block_owner(block_id));
+  // }
 
-    function get_sale_increment(uint256 sale_id) public view 
-    returns(uint256 block_increment)
-  {
-    return(sales_block[sale_id].gb.get_increment());
-  }
+  // function get_sale_increment(uint256 sale_id) public view 
+  //   returns(uint256 block_increment)
+  // {
+  //   return(sales_block[sale_id].gb.get_increment());
+  // }
 
 
 

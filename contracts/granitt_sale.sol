@@ -1,4 +1,5 @@
 pragma solidity ^0.5.3;
+//pragma solidity ^0.6.0;
  
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC721/ERC721Full.sol";
@@ -7,7 +8,7 @@ import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol";
 
 //import { granitt_blocks } from "granitt_blocks.sol";
-import "granitt_utils.sol";
+//import "granitt_utils.sol";
 
 
 //import "@openzeppelin/contracts-ethereum-package/contracts/drafts/Counters.sol";
@@ -15,7 +16,7 @@ import "granitt_utils.sol";
 contract granitt_sale is Initializable, ERC721Full, ERC721Mintable, 
   Ownable, ReentrancyGuard  
 {
-  using granitt_utils for string;
+  //using granitt_utils for string;
   //using granitt_blocks for granitt_blocks.data_blocks;
 
   //----------------------------------------
@@ -103,8 +104,8 @@ contract granitt_sale is Initializable, ERC721Full, ERC721Mintable,
 
     for (uint256 i = 0; i < uri_len; i++) 
     {
-      sale_docs_list = sale_docs_list.concat_str(p_sale_docs[i]);
-      sale_docs_list = sale_docs_list.concat_str(sep);
+      sale_docs_list = concat_str(sale_docs_list, p_sale_docs[i]);
+      sale_docs_list = concat_str(sale_docs_list, sep);
     }
 
     return(p_contract_owner, 
@@ -173,6 +174,18 @@ contract granitt_sale is Initializable, ERC721Full, ERC721Mintable,
 
     //emit block_add_event(block_address);
 
+  }
+
+  function concat_str(string memory _a, string memory _b) public pure returns (string memory)
+  {
+    bytes memory bytes_a = bytes(_a);
+    bytes memory bytes_b = bytes(_b);
+    string memory length_ab = new string(bytes_a.length + bytes_b.length);
+    bytes memory bytes_c = bytes(length_ab);
+    uint k = 0;
+    for (uint i = 0; i < bytes_a.length; i++) bytes_c[k++] = bytes_a[i];
+    for (uint i = 0; i < bytes_b.length; i++) bytes_c[k++] = bytes_b[i];
+    return string(bytes_c);
   }
 
   // function get_block_uri(uint256 sale_id, uint32 block_id) public view 

@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol";
 
 //import { granitt_blocks } from "granitt_blocks.sol";
-import "granitt_utils.sol";
+//import "granitt_utils.sol";
 
 contract granitt_block is Initializable, ERC721Full, ERC721Mintable, 
   Ownable, ReentrancyGuard  
